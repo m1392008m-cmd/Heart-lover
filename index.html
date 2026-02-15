@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<title>صانع الرسائل الرومانسية 💖</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="pink-bg">
+
+<div class="hearts-bg"></div>
+
+<div class="container">
+<h1>💘 أنشئ رسالتك يا جميل 💘</h1>
+
+<input type="text" id="fromName" placeholder="اسمك يا قمر">
+<input type="text" id="toName" placeholder="اسم العسل الي هيروحله الرسالة">
+
+<select id="type">
+<option>حب</option>
+<option>عشق</option>
+<option>غرام</option>
+<option>تهنئة</option>
+<option>فرح</option>
+<option>رسالة وخلاص</option>
+</select>
+
+<input type="file" id="image" accept="image/*">
+<input type="file" id="music" accept="audio/*">
+<input type="date" id="date">
+
+<input type="password" id="password" placeholder="كلمة السر السرية">
+
+<button class="love-btn" onclick="generateLink()">💖 توليد الرابط 💖</button>
+
+<input type="text" id="generatedLink" readonly>
+<button class="love-btn" onclick="copyLink()">💋 نسخ الرابط</button>
+
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
