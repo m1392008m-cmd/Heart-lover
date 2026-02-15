@@ -1,108 +1,104 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<title>رسالتك السرية 💌</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ابعت رسالة لحبيبك 💖</title>
 
 <style>
 body{
 margin:0;
-direction:rtl;
-font-family:'Cairo',sans-serif;
-background:linear-gradient(45deg,#ff1a75,#800040,#ff66a3);
+min-height:100vh;
+display:flex;
+align-items:center;
+justify-content:center;
+font-family:Tajawal,sans-serif;
+background:radial-gradient(circle at top,#330033,#000);
 color:white;
-text-align:center;
 overflow:hidden;
+text-align:center;
 }
 
-.center{
-margin-top:150px;
-}
-
-input{
-padding:12px;
-border-radius:20px;
-border:none;
-}
-
-button{
-padding:12px 25px;
-border:none;
-border-radius:25px;
-background:#ff4da6;
-color:white;
-cursor:pointer;
-}
-
-#messageBox{
-display:none;
-padding:30px;
+.card{
+max-width:600px;
+padding:50px;
+border-radius:30px;
+background:rgba(255,255,255,.05);
+backdrop-filter:blur(20px);
+border:1px solid rgba(255,0,150,.4);
+box-shadow:0 0 50px rgba(255,0,150,.2);
 }
 
 h1{
-min-height:60px;
+color:#ff66cc;
+margin-bottom:20px;
+}
+
+#text{
+line-height:1.8;
+font-size:20px;
+min-height:120px;
+}
+
+.spark{
+position:fixed;
+bottom:-20px;
+font-size:22px;
+animation:rise linear infinite;
+}
+
+@keyframes rise{
+0%{transform:translateY(0);opacity:1}
+100%{transform:translateY(-120vh);opacity:0}
 }
 </style>
 </head>
+
 <body>
 
-<div class="center" id="login">
-<h2>💗 ادخل كلمة السر يا جميل 💗</h2>
-<input type="password" id="pass">
-<br><br>
-<button onclick="checkPass()">دخول</button>
+<div class="card">
+<h1>💌 ابعت رسالة لحبيبك 💖</h1>
+<h2 id="title"></h2>
+<div id="text"></div>
 </div>
-
-<div id="messageBox">
-<button onclick="showMessage()">جاهز للمراجعه الكبري 💘</button>
-<h1 id="text"></h1>
-</div>
-
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"></script>
 
 <script>
-const firebaseConfig = {
-  apiKey: "PUT_YOURS",
-  authDomain: "PUT_YOURS",
-  projectId: "PUT_YOURS",
-  storageBucket: "PUT_YOURS",
-  messagingSenderId: "PUT_YOURS",
-  appId: "PUT_YOURS"
-};
+const params=new URLSearchParams(window.location.search);
+const id=params.get("id");
 
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
+let data=localStorage.getItem("love_"+id);
 
-const urlParams=new URLSearchParams(window.location.search);
-const id=urlParams.get("id");
-
-let messageData;
-
-async function checkPass(){
-let doc=await db.collection("messages").doc(id).get();
-messageData=doc.data();
-
-if(pass.value===messageData.password){
-login.style.display="none";
-messageBox.style.display="block";
+if(!data){
+document.body.innerHTML="<h2>الرابط غير موجود ❌</h2>";
 }else{
-alert("كلمة السر غلط 😢");
+
+data=JSON.parse(data);
+
+title.innerHTML=`💖 من ${data.from} إلى ${data.to} 💖`;
+
+let content=`${data.msg}\n\n🥰 بعشقك 🥰\n😍 بحبك 😍`;
+
+let i=0;
+function type(){
+if(i<content.length){
+text.innerHTML+=content.charAt(i)==="\n"?"<br>":content.charAt(i);
+i++;
+setTimeout(type,35);
 }
+}
+type();
 }
 
-function showMessage(){
-let text=`${messageData.type} 🥰🥰 بعشقك 🥰🥰 😍😍 بحبك 😍😍`;
-let i=0;
-function typing(){
-if(i<text.length){
-document.getElementById("text").innerHTML+=text.charAt(i);
-i++;
-setTimeout(typing,80);
-}
-}
-typing();
-}
+const emojis=["💖","💘","✨","❤️","🥰","😍"];
+setInterval(()=>{
+let s=document.createElement("span");
+s.className="spark";
+s.innerText=emojis[Math.floor(Math.random()*emojis.length)];
+s.style.left=Math.random()*100+"vw";
+s.style.animationDuration=(5+Math.random()*5)+"s";
+document.body.appendChild(s);
+setTimeout(()=>s.remove(),8000);
+},500);
 </script>
 
 </body>
