@@ -54,7 +54,7 @@
         <a href="index.html" class="back-btn">ابعت رسالة لحبيبك 💌</a>
     </div>
 
-    <script>
+        <script>
         // استخراج البيانات من الرابط
         const params = new URLSearchParams(window.location.search);
         const from = params.get('from') || "محبك";
@@ -70,23 +70,38 @@
             document.getElementById('startScreen').style.display = 'none';
             document.getElementById('mainContent').style.display = 'block';
             
-            // تشغيل الفيديو
-            if(video.includes('youtube.com') || video.includes('youtu.be')) {
-                let vidId = video.split('v=')[1] || video.split('/').pop();
-                document.getElementById('videoContainer').innerHTML = `<iframe src="https://www.youtube.com/embed/${vidId}?autoplay=1" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+            let videoArea = document.getElementById('videoContainer');
+            
+            // 1. منطق التعامل مع أي رابط فيديو
+            if (video) {
+                if (video.includes('youtube.com') || video.includes('youtu.be')) {
+                    // تحويل رابط يوتيوب العادي لرابط Embed عشان يشتغل جوه الصفحة
+                    let vidId = video.split('v=')[1]?.split('&')[0] || video.split('/').pop().split('?')[0];
+                    videoArea.innerHTML = `<iframe src="https://www.youtube.com/embed/${vidId}?autoplay=1" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen style="width:100%; height:315px; border-radius:15px;"></iframe>`;
+                } 
+                else if (video.match(/\.(mp4|webm|ogg)$/) !== null) {
+                    // لو الرابط مباشر لملف فيديو (بيخلص بـ mp4 مثلاً)
+                    videoArea.innerHTML = `<video width="100%" height="315" controls autoplay style="border-radius:15px; box-shadow: 0 0 20px rgba(0,0,0,0.5);"><source src="${video}" type="video/mp4">متصفحك لا يدعم تشغيل الفيديو</video>`;
+                } 
+                else {
+                    // لأي موقع تاني (فيسبوك، تيك توك، أو رابط خارجي) بنحاول نعرضه كـ Frame
+                    videoArea.innerHTML = `<iframe src="${video}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen style="width:100%; height:315px; border-radius:15px;"></iframe>`;
+                }
             }
 
-            // بدء الكتابة حرف حرف
+            // بدء الكتابة حرف حرف بشكل سينمائي
             typeWriter(msg, 0);
             
-            // بدء القلوب والشفاه
+            // بدء تطاير القلوب والشفاه
             setInterval(createParticle, 300);
         }
 
         function typeWriter(text, i) {
             if (i < text.length) {
-                document.getElementById("typewriter").innerHTML += text.charAt(i);
-                setTimeout(() => typeWriter(text, i + 1), 100);
+                // استبدال النيولاين \n ببريك <br> عشان التنسيق يفضل مظبوط
+                let char = text.charAt(i);
+                document.getElementById("typewriter").innerHTML += (char === '\n' ? '<br>' : char);
+                setTimeout(() => typeWriter(text, i + 1), 70); // السرعة هنا 70 عشان تكون سينمائية أكتر
             }
         }
 
@@ -96,9 +111,11 @@
             p.innerText = ['❤️', '💋', '💖'][Math.floor(Math.random()*3)];
             p.style.left = Math.random() * 100 + 'vw';
             p.style.fontSize = Math.random() * 20 + 20 + 'px';
+            p.style.opacity = Math.random();
             document.body.appendChild(p);
             setTimeout(() => p.remove(), 6000);
         }
     </script>
+
 </body>
 </html>
