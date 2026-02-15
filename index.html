@@ -47,18 +47,27 @@
 
     <script>
         function generateLink() {
-            const sender = encodeURIComponent(document.getElementById('sender').value);
-            const receiver = encodeURIComponent(document.getElementById('receiver').value);
-            const msg = encodeURIComponent(document.getElementById('msg').value);
-            const video = encodeURIComponent(document.getElementById('videoUrl').value);
-            
-            // الرابط سيعمل بناءً على اسم الملف الثاني
-            const baseUrl = window.location.href.replace('index.html', 'message.html');
-            const fullLink = `${baseUrl}?from=${sender}&to=${receiver}&m=${msg}&v=${video}`;
-            
-            document.getElementById('finalLink').innerText = fullLink;
-            document.getElementById('resultArea').style.display = 'block';
-        }
+    const sender = encodeURIComponent(document.getElementById('sender').value);
+    const receiver = encodeURIComponent(document.getElementById('receiver').value);
+    const msg = encodeURIComponent(document.getElementById('msg').value);
+    const video = encodeURIComponent(document.getElementById('videoUrl').value);
+    
+    // السطر ده هو اللي كان فيه المشكلة، دلوقتي هيجيب مسار الفولدر ويضيف عليه message.html صح
+    let currentPath = window.location.pathname;
+    let directoryPath = currentPath.substring(0, currentPath.lastIndexOf('/'));
+    let baseUrl = window.location.origin + directoryPath + '/message.html';
+    
+    // لو انت شغال من غير سيرفر (فتح الملف مباشرة من الكمبيوتر)
+    if(window.location.protocol === 'file:') {
+        baseUrl = 'message.html'; 
+    }
+
+    const fullLink = `${baseUrl}?from=${sender}&to=${receiver}&m=${msg}&v=${video}`;
+    
+    document.getElementById('finalLink').innerText = fullLink;
+    document.getElementById('resultArea').style.display = 'block';
+}
+
 
         function copyLink() {
             const link = document.getElementById('finalLink').innerText;
