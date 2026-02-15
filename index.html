@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<title>صانع الحب 💘</title>
+
+<style>
+body{
+margin:0;
+font-family:cursive;
+direction:rtl;
+background:linear-gradient(45deg,#ff9ecf,#ff4da6,#ff1a75);
+overflow:hidden;
+color:white;
+text-align:center;
+}
+
+.container{
+margin-top:50px;
+}
+
+input,select{
+display:block;
+margin:10px auto;
+padding:12px;
+width:80%;
+border:none;
+border-radius:25px;
+}
+
+button{
+background:#b30059;
+color:white;
+border:none;
+padding:15px 30px;
+border-radius:50px;
+font-size:18px;
+cursor:pointer;
+box-shadow:0 0 20px pink;
+transition:.3s;
+}
+
+button:hover{
+transform:scale(1.1);
+}
+
+.floating{
+position:fixed;
+bottom:-50px;
+font-size:25px;
+animation:floatUp 8s linear infinite;
+}
+
+@keyframes floatUp{
+0%{transform:translateY(0);opacity:1;}
+100%{transform:translateY(-120vh);opacity:0;}
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+<h1>💖 أنشئ رسالة عشق 💖</h1>
+
+<input id="from" placeholder="اسمك يا قمر">
+<input id="to" placeholder="اسم العسل">
+
+<select id="type">
+<option>حب</option>
+<option>عشق</option>
+<option>غرام</option>
+<option>تهنئة</option>
+<option>فرح</option>
+<option>رسالة وخلاص</option>
+</select>
+
+<input type="file" id="image" accept="image/*">
+<input type="file" id="music" accept="audio/*">
+<input type="date" id="date">
+<input type="password" id="password" placeholder="كلمة السر">
+
+<button onclick="generate()">💘 توليد الرابط 💘</button>
+
+<input id="link" readonly style="margin-top:15px;">
+<button onclick="copyLink()">💋 نسخ الرابط</button>
+
+</div>
+
+<script>
+const emojis=["😍","🥰","❤️","😘","💘","💝","💖","💗","💓","💞","💕","❣️","💟","❤️‍🔥","💋","❤️"];
+
+setInterval(()=>{
+let span=document.createElement("span");
+span.className="floating";
+span.innerText=emojis[Math.floor(Math.random()*emojis.length)];
+span.style.left=Math.random()*100+"vw";
+span.style.animationDuration=(5+Math.random()*5)+"s";
+document.body.appendChild(span);
+setTimeout(()=>span.remove(),8000);
+},300);
+
+function generate(){
+const readerImg=new FileReader();
+const readerMusic=new FileReader();
+
+const imgFile=document.getElementById("image").files[0];
+const musicFile=document.getElementById("music").files[0];
+
+let data={
+from:from.value,
+to:to.value,
+type:type.value,
+date:date.value,
+password:password.value,
+image:"",
+music:""
+};
+
+if(imgFile){
+readerImg.onload=e=>{
+data.image=e.target.result;
+localStorage.setItem("loveData",JSON.stringify(data));
+};
+readerImg.readAsDataURL(imgFile);
+}
+
+if(musicFile){
+readerMusic.onload=e=>{
+data.music=e.target.result;
+localStorage.setItem("loveData",JSON.stringify(data));
+};
+readerMusic.readAsDataURL(musicFile);
+}else{
+localStorage.setItem("loveData",JSON.stringify(data));
+}
+
+let short=Math.random().toString(36).substring(2,8);
+let link=location.origin+location.pathname.replace("index.html","")+"message.html?id="+short;
+localStorage.setItem("shortId",short);
+
+document.getElementById("link").value=link;
+}
+
+function copyLink(){
+let copyText=document.getElementById("link");
+copyText.select();
+document.execCommand("copy");
+alert("تم نسخ الرابط 💖");
+}
+</script>
+
+</body>
+</html>
