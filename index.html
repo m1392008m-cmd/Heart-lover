@@ -46,27 +46,36 @@
     </div>
 
     <script>
-        function generateLink() {
+        async function generateLink() {
     const sender = encodeURIComponent(document.getElementById('sender').value);
     const receiver = encodeURIComponent(document.getElementById('receiver').value);
     const msg = encodeURIComponent(document.getElementById('msg').value);
     const video = encodeURIComponent(document.getElementById('videoUrl').value);
     
-    // السطر ده هو اللي كان فيه المشكلة، دلوقتي هيجيب مسار الفولدر ويضيف عليه message.html صح
     let currentPath = window.location.pathname;
     let directoryPath = currentPath.substring(0, currentPath.lastIndexOf('/'));
     let baseUrl = window.location.origin + directoryPath + '/message.html';
     
-    // لو انت شغال من غير سيرفر (فتح الملف مباشرة من الكمبيوتر)
-    if(window.location.protocol === 'file:') {
-        baseUrl = 'message.html'; 
-    }
+    const longLink = `${baseUrl}?from=${sender}&to=${receiver}&m=${msg}&v=${video}`;
 
-    const fullLink = `${baseUrl}?from=${sender}&to=${receiver}&m=${msg}&v=${video}`;
-    
-    document.getElementById('finalLink').innerText = fullLink;
+    // إظهار الرابط الطويل مؤقتاً
+    document.getElementById('finalLink').innerText = "جاري توليد رابط قصير وفخم... ⏳";
     document.getElementById('resultArea').style.display = 'block';
+
+    try {
+        // استخدام خدمة تقصير مجانية (TinyURL كمثال)
+        const response = await fetch(`https://tinyurl.com/api-create.php?url=${encodeURIComponent(longLink)}`);
+        if (response.ok) {
+            const shortLink = await response.text();
+            document.getElementById('finalLink').innerText = shortLink;
+        } else {
+            document.getElementById('finalLink').innerText = longLink; // لو فشل يرجع للطويل
+        }
+    } catch (error) {
+        document.getElementById('finalLink').innerText = longLink;
+    }
 }
+
 
 
         function copyLink() {
