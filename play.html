@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>تجربتك الرومانسية 💖</title>
+<style>
+body{
+  margin:0;
+  font-family:'Arial',sans-serif;
+  background:linear-gradient(135deg,#ff9a9e,#fad0c4,#fbc2eb);
+  display:flex;
+  justify-content:center;
+  align-items:flex-start;
+  min-height:100vh;
+  padding:20px 0;
+  overflow-x:hidden;
+}
+.container{
+  background:#fff;
+  border-radius:25px;
+  box-shadow:0 15px 50px rgba(0,0,0,0.3);
+  padding:30px;
+  max-width:600px;
+  width:95%;
+  text-align:center;
+  position:relative;
+}
+h1{
+  color:#ff2e63;
+  font-size:28px;
+  margin-bottom:20px;
+  text-shadow:1px 1px 3px #fff;
+}
+p{font-size:16px;color:#333;margin-bottom:15px;}
+audio,video{width:100%;border-radius:15px;margin:10px 0;}
+.heart{
+  position:absolute;
+  color:#ff2e63;
+  font-size:24px;
+  animation:float 7s linear infinite;
+  user-select:none;
+}
+@keyframes float{
+  0%{transform:translateY(0) rotate(0deg);opacity:1;}
+  100%{transform:translateY(-100vh) rotate(360deg);opacity:0;}
+}
+input{width:100%;padding:10px;margin:5px 0 15px 0;border-radius:8px;border:1px solid #ccc;font-size:14px;}
+button{
+  width:100%;
+  padding:12px;
+  background:linear-gradient(45deg,#ff416c,#ff4b2b);
+  color:#fff;
+  border:none;
+  border-radius:10px;
+  cursor:pointer;
+  font-size:16px;
+  margin-top:10px;
+}
+button:hover{transform:translateY(-2px);box-shadow:0 5px 15px rgba(0,0,0,0.3);}
+#gameContainer{text-align:left;margin-top:20px;}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h1>💖 مرحباً! هذه تجربتك الرومانسية 💖</h1>
+  <div id="content"></div>
+  <div id="gameContainer" class="hidden"></div>
+</div>
+
+<script>
+const params=new URLSearchParams(window.location.search);
+const id=params.get('id');
+const data=JSON.parse(localStorage.getItem(id));
+const container=document.getElementById('content');
+const gameContainer=document.getElementById('gameContainer');
+
+if(data){
+  const {message,receiver,videoURL,audioURL,date,gameAnswers}=data;
+
+  // الرسالة النصية
+  let html=`<p>إلى <strong>${receiver}</strong>:<br>${message}</p>`;
+
+  // الفيديو
+  if(videoURL) html+=`<video src="${videoURL}" controls></video>`;
+
+  // الموسيقى
+  if(audioURL) html+=`<audio src="${audioURL}" controls></audio>`;
+
+  // التاريخ
+  if(date) html+=`<p>📅 التاريخ المميز: ${date}</p>`;
+
+  container.innerHTML=html;
+
+  // القلوب المتحركة
+  for(let i=0;i<30;i++){
+    const heart=document.createElement('div');
+    heart.textContent='❤️';
+    heart.className='heart';
+    heart.style.left=Math.random()*90+'%';
+    heart.style.fontSize=Math.random()*30+15+'px';
+    document.body.appendChild(heart);
+  }
+
+  // اللعبة/الاختبار
+  if(gameAnswers){
+    const answers=gameAnswers.split(',').map(a=>a.trim().toLowerCase());
+    gameContainer.classList.remove('hidden');
+    let gameHTML='<h2>اختبار صغير 🕹️</h2><p>جاوب على الأسئلة لتظهر المفاجأة:</p>';
+    answers.forEach((ans,index)=>{
+      gameHTML+=`<label>سؤال ${index+1}:</label><input type="text" id="q${index}" placeholder="اكتب إجابتك هنا">`;
+    });
+    gameHTML+=`<button id="submitGame">تحقق من الإجابات</button>`;
+    gameContainer.innerHTML=gameHTML;
+
+    document.getElementById('submitGame').onclick=()=>{
+      let correct=true;
+      answers.forEach((ans,index)=>{
+        const userAns=document.getElementById(`q${index}`).value.trim().toLowerCase();
+        if(userAns!==ans) correct=false;
+      });
+      if(correct){
+        alert('🎉 تهانينا! جميع الإجابات صحيحة، استمتع بالمفاجأة!');
+      }else{
+        alert('😢 بعض الإجابات غير صحيحة، حاول مرة أخرى.');
+      }
+    }
+  }
+
+}else{
+  container.innerHTML='<p>هذه التجربة غير موجودة أو انتهت صلاحيتها.</p>';
+}
+</script>
+
+</body>
+</html>
