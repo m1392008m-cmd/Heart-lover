@@ -1,146 +1,75 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>تجربة رومانسية كاملة 💖</title>
-<style>
-body{
-  margin:0;
-  font-family:'Arial',sans-serif;
-  background: linear-gradient(135deg,#ff9a9e,#fad0c4,#fbc2eb);
-  display:flex;
-  justify-content:center;
-  align-items:flex-start;
-  min-height:100vh;
-  padding:20px 0;
-  overflow-x:hidden;
-}
-.container{
-  background:#fff;
-  border-radius:25px;
-  box-shadow:0 15px 50px rgba(0,0,0,0.3);
-  padding:30px;
-  max-width:600px;
-  width:95%;
-  text-align:center;
-  position:relative;
-}
-h1{
-  color:#ff2e63;
-  font-size:28px;
-  margin-bottom:20px;
-  text-shadow:1px 1px 3px #fff;
-}
-p{font-size:16px;color:#333;margin-bottom:15px;}
-input,textarea{
-  width:100%;
-  padding:12px;
-  margin:10px 0;
-  border-radius:10px;
-  border:1px solid #ccc;
-  font-size:16px;
-  box-sizing:border-box;
-}
-button{
-  padding:12px 20px;
-  margin:5px 0;
-  font-size:16px;
-  font-weight:bold;
-  color:#fff;
-  background:linear-gradient(45deg,#ff416c,#ff4b2b);
-  border:none;
-  border-radius:12px;
-  cursor:pointer;
-  transition:all 0.3s ease;
-}
-button:hover{
-  transform:translateY(-2px);
-  box-shadow:0 5px 15px rgba(0,0,0,0.3);
-}
-.hidden{display:none;}
-.heart{
-  position:absolute;
-  color:#ff2e63;
-  font-size:24px;
-  animation:float 7s linear infinite;
-  user-select:none;
-}
-@keyframes float{
-  0%{transform:translateY(0) rotate(0deg);opacity:1;}
-  100%{transform:translateY(-100vh) rotate(360deg);opacity:0;}
-}
-audio,video{width:100%;border-radius:15px;margin:10px 0;}
-#linkContainer input{width:80%;padding:10px;font-size:14px;border-radius:10px;border:1px solid #ccc;margin-bottom:10px;}
-</style>
+    <meta charset="UTF-8">
+    <title>صانع المفاجآت الملكية 👑</title>
+    <style>
+        :root { --main: #800000; --gold: #ffd700; --pink: #ff69b4; }
+        body {
+            background: linear-gradient(135deg, #004d00, #800000, #ac7373);
+            background-size: 400% 400%; animation: bg 10s infinite;
+            color: white; font-family: 'Segoe UI', sans-serif;
+            display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0;
+        }
+        @keyframes bg { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
+        .card {
+            background: rgba(0,0,0,0.7); padding: 30px; border-radius: 20px;
+            box-shadow: 0 0 20px var(--gold); width: 90%; max-width: 500px; text-align: center;
+        }
+        input, textarea {
+            width: 100%; padding: 12px; margin: 10px 0; border-radius: 10px; border: none; font-size: 16px;
+        }
+        button {
+            background: var(--pink); color: white; border: none; padding: 15px 30px;
+            border-radius: 50px; cursor: pointer; font-weight: bold; font-size: 18px; transition: 0.3s;
+        }
+        button:hover { transform: scale(1.1); box-shadow: 0 0 15px var(--pink); }
+        #resultArea { margin-top: 20px; display: none; background: rgba(255,255,255,0.1); padding: 15px; border-radius: 10px; }
+        .link-display { word-break: break-all; color: var(--gold); margin-bottom: 10px; display: block; }
+    </style>
 </head>
 <body>
+    <div class="card">
+        <h2>👑 صانع المفاجآت الفخمة</h2>
+        <input type="text" id="sender" placeholder="اسمك يا عسل">
+        <input type="text" id="receiver" placeholder="اسم القمر اللي هتبعتله">
+        <textarea id="msg" placeholder="رسالتك يا شطور" rows="3"></textarea>
+        <input type="text" id="videoUrl" placeholder="رابط الفيديو (YouTube)">
+        
+        <button onclick="generateLink()">توليد الرابط الملكي ✨</button>
 
-<div class="container">
-  <h1>💖 تجربتك الرومانسية الكاملة 💖</h1>
-  
-  <!-- نموذج الرسالة الكامل -->
-  <textarea id="message" placeholder="اكتب رسالتك الرومانسية..." required></textarea>
-  <input type="text" id="receiver" placeholder="اسم حبيبك" required>
-  <input type="file" id="videoFile" accept="video/*">
-  <input type="file" id="audioFile" accept="audio/*">
-  <input type="text" id="date" placeholder="اكتب تاريخ مميز (مثال: ذكرى أول لقاء)">
-  <textarea id="gameAnswers" placeholder="اكتب الإجابات الصحيحة للأسئلة مفصولة بفاصلة"></textarea>
-  <button id="createBtn">إنشاء رابط قصير للتجربة 💌</button>
+        <div id="resultArea">
+            <span class="link-display" id="finalLink"></span>
+            <button onclick="copyLink()" style="background:#2ecc71; padding:10px 15px; font-size:14px;">نسخ الرابط 📋</button>
+            <button onclick="shareWhatsapp()" style="background:#25d366; padding:10px 15px; font-size:14px;">إرسال واتساب ✅</button>
+        </div>
+    </div>
 
-  <!-- رابط التجربة -->
-  <div id="linkContainer" class="hidden">
-    <p>رابط تجربتك:</p>
-    <input type="text" id="generatedLink" readonly>
-    <button onclick="copyLink()">نسخ الرابط</button>
-  </div>
-</div>
+    <script>
+        function generateLink() {
+            const sender = encodeURIComponent(document.getElementById('sender').value);
+            const receiver = encodeURIComponent(document.getElementById('receiver').value);
+            const msg = encodeURIComponent(document.getElementById('msg').value);
+            const video = encodeURIComponent(document.getElementById('videoUrl').value);
+            
+            // الرابط سيعمل بناءً على اسم الملف الثاني
+            const baseUrl = window.location.href.replace('index.html', 'message.html');
+            const fullLink = `${baseUrl}?from=${sender}&to=${receiver}&m=${msg}&v=${video}`;
+            
+            document.getElementById('finalLink').innerText = fullLink;
+            document.getElementById('resultArea').style.display = 'block';
+        }
 
-<script>
-function copyLink(){
-  const input=document.getElementById('generatedLink');
-  input.select();
-  document.execCommand('copy');
-  alert('تم نسخ الرابط! 🌹');
-}
+        function copyLink() {
+            const link = document.getElementById('finalLink').innerText;
+            navigator.clipboard.writeText(link);
+            alert("تم نسخ الرابط! ابعته للحبيب الآن 💖");
+        }
 
-document.getElementById('createBtn').onclick=function(){
-  const message=document.getElementById('message').value.trim();
-  const receiver=document.getElementById('receiver').value.trim();
-  const videoFile=document.getElementById('videoFile').files[0];
-  const audioFile=document.getElementById('audioFile').files[0];
-  const date=document.getElementById('date').value.trim();
-  const gameAnswers=document.getElementById('gameAnswers').value.trim();
-
-  if(!message||!receiver) return alert('يرجى ملء الرسالة واسم المستلم');
-
-  // تحويل الملفات إلى روابط محلية مؤقتة
-  let videoURL = videoFile ? URL.createObjectURL(videoFile) : '';
-  let audioURL = audioFile ? URL.createObjectURL(audioFile) : '';
-
-  // إنشاء معرف قصير فريد
-  const id=Math.random().toString(36).substr(2,8);
-
-  // تخزين البيانات في localStorage
-  const data={message,receiver,videoURL,audioURL,date,gameAnswers};
-  localStorage.setItem(id,JSON.stringify(data));
-
-  // إنشاء رابط قصير
-  const link=window.location.href.replace('experience.html','')+'play.html?id='+id;
-  document.getElementById('generatedLink').value=link;
-  document.getElementById('linkContainer').classList.remove('hidden');
-
-  // إضافة قلوب متحركة
-  for(let i=0;i<30;i++){
-    const heart=document.createElement('div');
-    heart.textContent='❤️';
-    heart.className='heart';
-    heart.style.left=Math.random()*90+'%';
-    heart.style.fontSize=Math.random()*30+15+'px';
-    document.body.appendChild(heart);
-  }
-}
-</script>
-
+        function shareWhatsapp() {
+            const link = document.getElementById('finalLink').innerText;
+            window.open(`https://wa.me/?text=${encodeURIComponent("عندي ليك مفاجأة ملكية: " + link)}`);
+        }
+    </script>
 </body>
 </html>

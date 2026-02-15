@@ -1,105 +1,104 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ابعت رسالة لحبيبك 💖</title>
+    <meta charset="UTF-8">
+    <title>مفاجأة لك</title>
+    <style>
+        body {
+            margin: 0; padding: 0; overflow-x: hidden;
+            background: linear-gradient(-45deg, #004d00, #cc0000, #800000, #ff69b4, #ac7373);
+            background-size: 400% 400%; animation: bg 15s infinite;
+            font-family: 'Cairo', sans-serif; text-align: center; color: white;
+        }
+        @keyframes bg { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
 
-<style>
-body{
-margin:0;
-min-height:100vh;
-display:flex;
-align-items:center;
-justify-content:center;
-font-family:Tajawal,sans-serif;
-background:radial-gradient(circle at top,#330033,#000);
-color:white;
-overflow:hidden;
-text-align:center;
-}
+        /* القلب الكبير عند البداية */
+        #startScreen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9); z-index: 1000;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+        }
+        .big-heart {
+            font-size: 150px; cursor: pointer; animation: pulse 1.5s infinite;
+            filter: drop-shadow(0 0 30px #ff69b4);
+        }
+        @keyframes pulse { 0% {transform: scale(1);} 50% {transform: scale(1.2);} 100% {transform: scale(1);} }
+        .names-on-heart { position: absolute; font-size: 20px; font-weight: bold; pointer-events: none; color: white; text-shadow: 2px 2px 5px black; }
 
-.card{
-max-width:600px;
-padding:50px;
-border-radius:30px;
-background:rgba(255,255,255,.05);
-backdrop-filter:blur(20px);
-border:1px solid rgba(255,0,150,.4);
-box-shadow:0 0 50px rgba(255,0,150,.2);
-}
+        /* القلوب والشفاه المتطايرة */
+        .particle { position: fixed; bottom: -50px; z-index: 5; animation: fly 6s linear infinite; pointer-events: none; }
+        @keyframes fly { to { transform: translateY(-110vh) rotate(360deg); opacity: 0; } }
 
-h1{
-color:#ff66cc;
-margin-bottom:20px;
-}
-
-#text{
-line-height:1.8;
-font-size:20px;
-min-height:120px;
-}
-
-.spark{
-position:fixed;
-bottom:-20px;
-font-size:22px;
-animation:rise linear infinite;
-}
-
-@keyframes rise{
-0%{transform:translateY(0);opacity:1}
-100%{transform:translateY(-120vh);opacity:0}
-}
-</style>
+        .content { display: none; padding: 20px; z-index: 10; position: relative; }
+        #typewriter { font-size: 24px; font-weight: bold; margin: 20px; min-height: 50px; line-height: 1.6; }
+        iframe { border-radius: 15px; box-shadow: 0 0 20px rgba(0,0,0,0.5); width: 100%; max-width: 560px; height: 315px; }
+        
+        .back-btn {
+            margin-top: 40px; padding: 10px 20px; background: white; color: #800000;
+            border-radius: 20px; text-decoration: none; font-weight: bold; display: inline-block;
+        }
+    </style>
 </head>
-
 <body>
 
-<div class="card">
-<h1>💌 ابعت رسالة لحبيبك 💖</h1>
-<h2 id="title"></h2>
-<div id="text"></div>
-</div>
+    <div id="startScreen">
+        <div class="big-heart" onclick="startShow()">💖</div>
+        <div class="names-on-heart" id="heartNames"></div>
+        <p>اضغط على القلب يا قمر</p>
+    </div>
 
-<script>
-const params=new URLSearchParams(window.location.search);
-const id=params.get("id");
+    <div class="content" id="mainContent">
+        <h2 id="toHeader"></h2>
+        <div id="videoContainer"></div>
+        <div id="typewriter"></div>
+        <a href="index.html" class="back-btn">ابعت رسالة لحبيبك 💌</a>
+    </div>
 
-let data=localStorage.getItem("love_"+id);
+    <script>
+        // استخراج البيانات من الرابط
+        const params = new URLSearchParams(window.location.search);
+        const from = params.get('from') || "محبك";
+        const to = params.get('to') || "حبيبي";
+        const msg = params.get('m') || "أنت أغلى ما في حياتي";
+        let video = params.get('v') || "";
 
-if(!data){
-document.body.innerHTML="<h2>الرابط غير موجود ❌</h2>";
-}else{
+        // عرض الأسماء على القلب
+        document.getElementById('heartNames').innerText = `${from} ❤️ ${to}`;
+        document.getElementById('toHeader').innerText = `إلى: ${to} ✨`;
 
-data=JSON.parse(data);
+        function startShow() {
+            document.getElementById('startScreen').style.display = 'none';
+            document.getElementById('mainContent').style.display = 'block';
+            
+            // تشغيل الفيديو
+            if(video.includes('youtube.com') || video.includes('youtu.be')) {
+                let vidId = video.split('v=')[1] || video.split('/').pop();
+                document.getElementById('videoContainer').innerHTML = `<iframe src="https://www.youtube.com/embed/${vidId}?autoplay=1" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+            }
 
-title.innerHTML=`💖 من ${data.from} إلى ${data.to} 💖`;
+            // بدء الكتابة حرف حرف
+            typeWriter(msg, 0);
+            
+            // بدء القلوب والشفاه
+            setInterval(createParticle, 300);
+        }
 
-let content=`${data.msg}\n\n🥰 بعشقك 🥰\n😍 بحبك 😍`;
+        function typeWriter(text, i) {
+            if (i < text.length) {
+                document.getElementById("typewriter").innerHTML += text.charAt(i);
+                setTimeout(() => typeWriter(text, i + 1), 100);
+            }
+        }
 
-let i=0;
-function type(){
-if(i<content.length){
-text.innerHTML+=content.charAt(i)==="\n"?"<br>":content.charAt(i);
-i++;
-setTimeout(type,35);
-}
-}
-type();
-}
-
-const emojis=["💖","💘","✨","❤️","🥰","😍"];
-setInterval(()=>{
-let s=document.createElement("span");
-s.className="spark";
-s.innerText=emojis[Math.floor(Math.random()*emojis.length)];
-s.style.left=Math.random()*100+"vw";
-s.style.animationDuration=(5+Math.random()*5)+"s";
-document.body.appendChild(s);
-setTimeout(()=>s.remove(),8000);
-},500);
-</script>
-
+        function createParticle() {
+            const p = document.createElement('div');
+            p.className = 'particle';
+            p.innerText = ['❤️', '💋', '💖'][Math.floor(Math.random()*3)];
+            p.style.left = Math.random() * 100 + 'vw';
+            p.style.fontSize = Math.random() * 20 + 20 + 'px';
+            document.body.appendChild(p);
+            setTimeout(() => p.remove(), 6000);
+        }
+    </script>
 </body>
 </html>
