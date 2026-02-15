@@ -2,62 +2,80 @@
 <html lang="ar">
 <head>
 <meta charset="UTF-8">
-<title>صانع الحب 💘</title>
+<title>صانع الرسائل العشقية 💘</title>
 
 <style>
+*{box-sizing:border-box}
 body{
 margin:0;
-font-family:cursive;
+font-family:'Cairo',sans-serif;
 direction:rtl;
-background:linear-gradient(45deg,#ff9ecf,#ff4da6,#ff1a75);
+background:radial-gradient(circle at top,#ff9ecf,#ff4da6,#800040);
+min-height:100vh;
 overflow:hidden;
 color:white;
-text-align:center;
 }
 
 .container{
-margin-top:50px;
+width:90%;
+max-width:500px;
+margin:50px auto;
+background:rgba(255,255,255,0.1);
+backdrop-filter:blur(15px);
+padding:30px;
+border-radius:25px;
+box-shadow:0 0 40px rgba(255,0,100,.5);
+text-align:center;
+}
+
+h1{
+margin-bottom:20px;
 }
 
 input,select{
-display:block;
-margin:10px auto;
+width:100%;
 padding:12px;
-width:80%;
+margin:10px 0;
 border:none;
-border-radius:25px;
+border-radius:15px;
+outline:none;
 }
 
 button{
-background:#b30059;
-color:white;
+width:100%;
+padding:15px;
 border:none;
-padding:15px 30px;
-border-radius:50px;
+border-radius:30px;
+background:linear-gradient(45deg,#ff1a75,#ff66a3);
+color:white;
 font-size:18px;
 cursor:pointer;
-box-shadow:0 0 20px pink;
 transition:.3s;
+box-shadow:0 0 20px #ff4da6;
 }
 
 button:hover{
-transform:scale(1.1);
+transform:scale(1.05);
+}
+
+#result{
+margin-top:15px;
+word-break:break-all;
 }
 
 .floating{
 position:fixed;
-bottom:-50px;
-font-size:25px;
-animation:floatUp 8s linear infinite;
+bottom:-30px;
+font-size:22px;
+animation:rise linear infinite;
 }
 
-@keyframes floatUp{
-0%{transform:translateY(0);opacity:1;}
-100%{transform:translateY(-120vh);opacity:0;}
+@keyframes rise{
+0%{transform:translateY(0);opacity:1}
+100%{transform:translateY(-120vh);opacity:0}
 }
 </style>
 </head>
-
 <body>
 
 <div class="container">
@@ -75,78 +93,62 @@ animation:floatUp 8s linear infinite;
 <option>رسالة وخلاص</option>
 </select>
 
-<input type="file" id="image" accept="image/*">
-<input type="file" id="music" accept="audio/*">
+<input type="file" id="image">
+<input type="file" id="music">
 <input type="date" id="date">
 <input type="password" id="password" placeholder="كلمة السر">
 
-<button onclick="generate()">💘 توليد الرابط 💘</button>
+<button onclick="createMessage()">💘 توليد الرابط 💘</button>
 
-<input id="link" readonly style="margin-top:15px;">
-<button onclick="copyLink()">💋 نسخ الرابط</button>
-
+<div id="result"></div>
 </div>
 
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"></script>
+
 <script>
-const emojis=["😍","🥰","❤️","😘","💘","💝","💖","💗","💓","💞","💕","❣️","💟","❤️‍🔥","💋","❤️"];
+// 🔥 حط بياناتك هنا
+const firebaseConfig = {
+  apiKey: "PUT_YOURS",
+  authDomain: "PUT_YOURS",
+  projectId: "PUT_YOURS",
+  storageBucket: "PUT_YOURS",
+  messagingSenderId: "PUT_YOURS",
+  appId: "PUT_YOURS"
+};
 
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+const emojis=["😍","🥰","❤️","😘","💘","💝","💖","💗"];
 setInterval(()=>{
-let span=document.createElement("span");
-span.className="floating";
-span.innerText=emojis[Math.floor(Math.random()*emojis.length)];
-span.style.left=Math.random()*100+"vw";
-span.style.animationDuration=(5+Math.random()*5)+"s";
-document.body.appendChild(span);
-setTimeout(()=>span.remove(),8000);
-},300);
+let e=document.createElement("span");
+e.className="floating";
+e.innerText=emojis[Math.floor(Math.random()*emojis.length)];
+e.style.left=Math.random()*100+"vw";
+e.style.animationDuration=(5+Math.random()*5)+"s";
+document.body.appendChild(e);
+setTimeout(()=>e.remove(),8000);
+},400);
 
-function generate(){
-const readerImg=new FileReader();
-const readerMusic=new FileReader();
+async function createMessage(){
 
-const imgFile=document.getElementById("image").files[0];
-const musicFile=document.getElementById("music").files[0];
+let id=Math.random().toString(36).substring(2,8);
 
-let data={
+await db.collection("messages").doc(id).set({
 from:from.value,
 to:to.value,
 type:type.value,
 date:date.value,
-password:password.value,
-image:"",
-music:""
-};
+password:password.value
+});
 
-if(imgFile){
-readerImg.onload=e=>{
-data.image=e.target.result;
-localStorage.setItem("loveData",JSON.stringify(data));
-};
-readerImg.readAsDataURL(imgFile);
-}
+let link=window.location.origin + window.location.pathname.replace("index.html","") + "message.html?id="+id;
 
-if(musicFile){
-readerMusic.onload=e=>{
-data.music=e.target.result;
-localStorage.setItem("loveData",JSON.stringify(data));
-};
-readerMusic.readAsDataURL(musicFile);
-}else{
-localStorage.setItem("loveData",JSON.stringify(data));
-}
-
-let short=Math.random().toString(36).substring(2,8);
-let link=location.origin+location.pathname.replace("index.html","")+"message.html?id="+short;
-localStorage.setItem("shortId",short);
-
-document.getElementById("link").value=link;
-}
-
-function copyLink(){
-let copyText=document.getElementById("link");
-copyText.select();
-document.execCommand("copy");
-alert("تم نسخ الرابط 💖");
+document.getElementById("result").innerHTML=`
+<input value="${link}" style="width:100%;padding:10px;border-radius:10px;">
+<button onclick="navigator.clipboard.writeText('${link}')">نسخ الرابط</button>
+`;
 }
 </script>
 

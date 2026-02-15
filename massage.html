@@ -2,150 +2,103 @@
 <html lang="ar">
 <head>
 <meta charset="UTF-8">
-<title>رسالة سرية 💌</title>
+<title>رسالتك السرية 💌</title>
 
 <style>
 body{
 margin:0;
 direction:rtl;
-font-family:cursive;
-background:linear-gradient(45deg,#ff66a3,#800040,#ff1a75);
-overflow:hidden;
+font-family:'Cairo',sans-serif;
+background:linear-gradient(45deg,#ff1a75,#800040,#ff66a3);
 color:white;
 text-align:center;
+overflow:hidden;
 }
 
-#heartCanvas{
-position:absolute;
-top:0;
-left:0;
+.center{
+margin-top:150px;
 }
 
 input{
 padding:12px;
-border-radius:25px;
+border-radius:20px;
 border:none;
-margin-top:200px;
 }
 
 button{
-padding:15px 30px;
+padding:12px 25px;
 border:none;
-border-radius:50px;
-background:#ff1a75;
+border-radius:25px;
+background:#ff4da6;
 color:white;
-font-size:18px;
 cursor:pointer;
-box-shadow:0 0 20px pink;
 }
 
-#final{
+#messageBox{
 display:none;
-padding:20px;
+padding:30px;
 }
 
-.floating{
-position:fixed;
-bottom:-50px;
-font-size:25px;
-animation:floatUp 8s linear infinite;
-}
-
-@keyframes floatUp{
-0%{transform:translateY(0);opacity:1;}
-100%{transform:translateY(-120vh);opacity:0;}
+h1{
+min-height:60px;
 }
 </style>
 </head>
-
 <body>
 
-<canvas id="heartCanvas"></canvas>
-
-<div id="login">
+<div class="center" id="login">
 <h2>💗 ادخل كلمة السر يا جميل 💗</h2>
 <input type="password" id="pass">
 <br><br>
-<button onclick="check()">دخول</button>
+<button onclick="checkPass()">دخول</button>
 </div>
 
-<div id="review" style="display:none;">
-<button onclick="start()">جاهز للمراجعه الكبري 💘</button>
-</div>
-
-<div id="final">
+<div id="messageBox">
+<button onclick="showMessage()">جاهز للمراجعه الكبري 💘</button>
 <h1 id="text"></h1>
-<img id="img" width="300"><br><br>
-<audio id="audio" controls></audio>
 </div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"></script>
 
 <script>
-const emojis=["😍","🥰","❤️","😘","💘","💝","💖","💗","💓","💞","💕","❣️","💟","❤️‍🔥","💋","🤭"];
+const firebaseConfig = {
+  apiKey: "PUT_YOURS",
+  authDomain: "PUT_YOURS",
+  projectId: "PUT_YOURS",
+  storageBucket: "PUT_YOURS",
+  messagingSenderId: "PUT_YOURS",
+  appId: "PUT_YOURS"
+};
 
-setInterval(()=>{
-let span=document.createElement("span");
-span.className="floating";
-span.innerText=emojis[Math.floor(Math.random()*emojis.length)];
-span.style.left=Math.random()*100+"vw";
-span.style.animationDuration=(5+Math.random()*5)+"s";
-document.body.appendChild(span);
-setTimeout(()=>span.remove(),8000);
-},300);
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
 
-const canvas=document.getElementById("heartCanvas");
-const ctx=canvas.getContext("2d");
-canvas.width=window.innerWidth;
-canvas.height=window.innerHeight;
+const urlParams=new URLSearchParams(window.location.search);
+const id=urlParams.get("id");
 
-let hearts=[];
-for(let i=0;i<200;i++){
-hearts.push({
-x:Math.random()*canvas.width,
-y:Math.random()*canvas.height,
-});
-}
+let messageData;
 
-function draw(){
-ctx.clearRect(0,0,canvas.width,canvas.height);
-ctx.fillStyle="pink";
-hearts.forEach(h=>{
-ctx.fillText("❤️",h.x,h.y);
-h.y+=1;
-});
-requestAnimationFrame(draw);
-}
-draw();
+async function checkPass(){
+let doc=await db.collection("messages").doc(id).get();
+messageData=doc.data();
 
-function check(){
-let data=JSON.parse(localStorage.getItem("loveData"));
-if(pass.value===data.password){
+if(pass.value===messageData.password){
 login.style.display="none";
-review.style.display="block";
+messageBox.style.display="block";
 }else{
 alert("كلمة السر غلط 😢");
 }
 }
 
-function start(){
-review.style.display="none";
-final.style.display="block";
-
-let data=JSON.parse(localStorage.getItem("loveData"));
-
-if(data.image) img.src=data.image;
-if(data.music) audio.src=data.music;
-
-let message=`${data.type} 🥰🥰 بعشقك 🥰🥰 😍😍 بحبك 😍😍`;
-typeWriter(message);
-}
-
-function typeWriter(text){
+function showMessage(){
+let text=`${messageData.type} 🥰🥰 بعشقك 🥰🥰 😍😍 بحبك 😍😍`;
 let i=0;
 function typing(){
 if(i<text.length){
 document.getElementById("text").innerHTML+=text.charAt(i);
 i++;
-setTimeout(typing,100);
+setTimeout(typing,80);
 }
 }
 typing();
